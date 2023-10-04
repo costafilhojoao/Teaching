@@ -42,7 +42,7 @@ parameters phi     ${\phi}$ (long_name='Curvatura da função utilidade em rela�
 
 
 phi   = 1;
-psi   = 1;
+psi   = 2.29;
 sigma = 2;
 alpha = 0.44;
 beta  = 0.97;
@@ -85,7 +85,7 @@ exp(w) = ( 1 - alpha ) * exp(y) / exp(h);
 exp(y) = exp(c) + exp(i);
 
 [name = 'Produtividade']
-exp(A) = ( 1 - rho ) * exp(Abar) + rho * exp(A(-1)) + e;
+A = ( 1 - rho ) * Abar + rho * A(-1) + e;
 
 end;
 

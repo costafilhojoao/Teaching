@@ -37,7 +37,7 @@ parameters phi     ${\phi}$ (long_name='Curvatura da função utilidade em rela�
 
 
 phi   = 1;
-psi   = 1;
+psi   = 2.29;
 sigma = 2;
 alpha = 0.44;
 beta  = 0.97;

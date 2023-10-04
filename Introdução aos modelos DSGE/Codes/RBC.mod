@@ -67,7 +67,7 @@ exp(k) = ( 1 - delta ) * exp(k(-1)) + exp(A) * exp(k(-1))^alpha * exp(h)^( 1 - a
 %%%%%%%%%%%%% Agragação %%%%%%%%%%%%% 
 
 [name = 'Produtividade']
-exp(A) = ( 1 - rho ) * exp(Abar) + rho * exp(A(-1)) + e;
+A = ( 1 - rho ) * Abar + rho * A(-1) + e;
 
 end;
 
