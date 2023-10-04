@@ -1,6 +1,6 @@
 %%%%% Introdução aos modelos DSGE
 %%%%% Modelo de Ciclos de Negócio Reais (RBC)
-%%%%% Modelo básico não-linear
+%%%%% Modelo completo não-linear
 %%%%% João Ricardo Costa Filho
 %%%%% joaocostafilho.com
 
@@ -12,8 +12,13 @@
 
 var c  ${c}$  (long_name='Consumo')
     h  ${h}$  (long_name='Horas trabalhadas')
-    A  ${A}$  (long_name='Produtividade Total dos Fatores')
     k  ${k}$  (long_name='Estoque de capital')
+    w  ${w}$  (long_name='Salário real')
+    r  ${r}$  (long_name='Taxa de juros real')
+    y  ${y}$  (long_name='PIB')
+    i  ${r}$  (long_name='Investimento')
+    A  ${A}$  (long_name='Produtividade Total dos Fatores')
+
 ;
 
 %%% Variáveis exógenas %%%
@@ -21,12 +26,11 @@ var c  ${c}$  (long_name='Consumo')
 varexo e ${\varepsilon_A}$   (long_name='Choque de produtividade')
 ;
 
-
 %--------------------------------------------------------------------------------------------------------------------------------------
 % 2. Calibração
 %--------------------------------------------------------------------------------------------------------------------------------------
 
-parameters phi     ${\phi}$ (long_name='curvatura da função utilidade em relação às horas trabalhadas')
+parameters phi     ${\phi}$ (long_name='Curvatura da função utilidade em relação às horas trabalhadas')
            psi     ${\psi}$ (long_name='peso da desutilidade do trabalho na função utilidade')
            sigma   ${\sigma}$ (long_name='curvatura da função utilidade')
            alpha   ${\alpha}$ (long_name='parâmetro da função de produção')
@@ -38,7 +42,7 @@ parameters phi     ${\phi}$ (long_name='curvatura da função utilidade em rela�
 
 
 phi   = 1;
-psi   = 2.29;
+psi   = 1;
 sigma = 2;
 alpha = 0.44;
 beta  = 0.97;
@@ -56,15 +60,29 @@ model;
 %%%%%%%%%%%%% Famílias %%%%%%%%%%%%% 
 
 [name = 'Oferta de Trabalho']
-psi * exp(h)^phi * exp(c)^sigma = ( 1 - alpha ) * exp(A) * ( exp(k(-1)) / exp(h) )^alpha;
+psi * exp(h)^phi * exp(c)^sigma = exp(w);
 
 [name = 'Equação de Euler']
-exp(c)^(-sigma) = beta * ( exp(c(+1)) )^(-sigma) * ( 1 + alpha * exp(A(+1)) * ( exp(k) / exp(h(+1)) )^(alpha - 1) - delta );
+exp(c)^(-sigma) = beta * ( exp(c(+1)) )^(-sigma) * ( 1 + exp(r(+1)) - delta );
 
 [name = 'Lei de Movimento do Capital']
-exp(k) = ( 1 - delta ) * exp(k(-1)) + exp(A) * exp(k(-1))^alpha * exp(h)^( 1 - alpha ) - exp(c);
+exp(k) = ( 1 - delta ) * exp(k(-1)) + exp(i);
+
+%%%%%%%%%%%%% Empresas %%%%%%%%%%%%% 
+
+[name = 'Função de produção']
+exp(y) = exp(A) * exp(k(-1))^alpha * exp(h)^(1-alpha);
+
+[name = 'Demanda por capital']
+exp(r) = alpha * exp(y) / exp(k);
+
+[name = 'Demanda por trabalho']
+exp(w) = ( 1 - alpha ) * exp(y) / exp(h);
 
 %%%%%%%%%%%%% Agragação %%%%%%%%%%%%% 
+
+[name = 'Restrição de recursos']
+exp(y) = exp(c) + exp(i);
 
 [name = 'Produtividade']
 exp(A) = ( 1 - rho ) * exp(Abar) + rho * exp(A(-1)) + e;
@@ -75,12 +93,10 @@ end;
 % 4. Equilíbrio
 %--------------------------------------------------------------------------------------------------------------------------------------
 
-initval;
-A = 1;
-h = 0.35;
-c = 1.01;
-k = 9.32;
-end;
+steady;
+check;
+model_diagnostics;
+model_info;
 
 %--------------------------------------------------------------------------------------------------------------------------------------
 % 5. Simulação
